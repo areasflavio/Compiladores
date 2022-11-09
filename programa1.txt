@@ -1,0 +1,5 @@
+begin
+xew = 5
+xew
+(5+5)*2
+end
