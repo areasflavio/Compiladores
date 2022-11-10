@@ -8,6 +8,7 @@
 digito	            [0-9]
 letra	              [a-zA-Z]
 aspasSimples        "'"
+aspasDuplas         "\""
 
 /* 
 pontdig {digito}*"."?{digito}+
@@ -20,6 +21,7 @@ identificador		    {letra}({letra}|{digito})*
 inteiro             {digito}+
 real                {digito}+"."{digito}+
 caracter            {aspasSimples}({letra}|{digito}){aspasSimples}
+string              {aspasDuplas}(.)+{aspasDuplas}
 
 relacional          "=="|">="|"<="|">"|"<"|"!="
 logicoBinario       "and"|"or"
@@ -57,10 +59,11 @@ logicoUnario        "not"
 "-"                 { return SUB; }
 "*"                 { return MULT; }
 "/"                 { return DIV; }
-{inteiro}           { yylval.real = atof(yytext); return INTEIRO; }
+{inteiro}           { yylval.inteiro = atoi(yytext); return INTEIRO; }
 {real}              { yylval.real = atof(yytext); return REAL; }
 {identificador}		  { strcpy(yylval.id, yytext); return IDENTIFICADOR; }
 {caracter}          { strcpy(yylval.caracter, yytext); return CARACTER; }
+{string}            { strcpy(yylval.string, yytext); return STRING; }
 .   		            { }
 
 %%

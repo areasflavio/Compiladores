@@ -23,6 +23,7 @@ unordered_map<string, char> variablesCHAR;
   int inteiro;
 	double real;
   char caracter[3];
+  char string[30];
 	char id[16];
 }
 
@@ -30,6 +31,7 @@ unordered_map<string, char> variablesCHAR;
 %token <inteiro> INTEIRO
 %token <real> REAL
 %token <caracter> CARACTER
+%token <string> STRING
 
 %token INT DOUBLE CHAR
 %token INICIOPROGRAMA FIMPROGRAMA FIMLINHA 
@@ -41,7 +43,8 @@ unordered_map<string, char> variablesCHAR;
 
 /* %type <real> valor
 %type <real> informacao */
-%type <inteiro> expressaoMat
+%type <real> expressaoMat
+
 %type <inteiro> comandoSaidaINT
 %type <real> comandoSaidaREAL
 %type <caracter> comandoSaidaCHAR 
@@ -76,54 +79,49 @@ declaracaoINT: INT IDENTIFICADOR PONTOVIRGULA { variablesINT[$2] = 0; } ;
 declaracaoREAL: DOUBLE IDENTIFICADOR PONTOVIRGULA { variablesREAL[$2] = 0; } ;
 declaracaoCHAR: CHAR IDENTIFICADOR PONTOVIRGULA { variablesCHAR[$2] = ' '; } ;
 
-/*
-calc: ID '=' expr 			    { variables[$1] = $3; } 	
-    | expr					        { cout << "= " << $1 << "\n"; }
-    ; 
-*/
-
-/* declaracao: TIPO variaveis PONTOVIRGULA ; */
-
-/* variaveis: IDENTIFICADOR VIRGULA variaveis
-         | IDENTIFICADOR
-         | setaValor VIRGULA variaveis
-         | setaValor
-         ; */
-
 atribuirValor: setaValor PONTOVIRGULA ;
 
-setaValor: IDENTIFICADOR ATRIBUICAO expressaoMat { 
-                      if(variablesINT.find($1) != variablesINT.end())
-                        variablesINT[$1] = $3;
-                      else if(variablesREAL.find($1) != variablesREAL.end()) 
-                        variablesREAL[$1] = $3;
-                      else if(variablesCHAR.find($1) != variablesCHAR.end()) 
-                        variablesCHAR[$1] = $3; expressaoMat
+setaValor: IDENTIFICADOR ATRIBUICAO expressaoMat  { if (variablesINT.find($1) != variablesINT.end())
+                                                      variablesINT[$1] = (int)$3;
+                                                    else if(variablesREAL.find($1) != variablesREAL.end())
+                                                      variablesREAL[$1] = (double)$3;
+                                                    else if(variablesCHAR.find($1) != variablesCHAR.end())
+                                                      variablesCHAR[$1] = $3;
+                                                  }
 
-                    };
-
-expressaoMat: expressaoMat SOMA expressaoMat   { $$ = $1 + $3; } /* FUNCIONANDO SÓ PRA INT */
+expressaoMat: expressaoMat SOMA expressaoMat  { $$ = $1 + $3; }
             | expressaoMat SUB expressaoMat   { $$ = $1 - $3; }
-            | expressaoMat MULT expressaoMat   { $$ = $1 * $3; }
+            | expressaoMat MULT expressaoMat  { $$ = $1 * $3; }
             | expressaoMat DIV expressaoMat   { 
                                                 if ($3 == 0)
                                                   yyerror("Divisão por 0");
                                                 else
                                                   $$ = $1 / $3; 
                                               }
-            | '(' expressaoMat ')'			      { $$ = $2; }
+            | ABREPARENTESES expressaoMat FECHAPARENTESES			      { $$ = $2; }
             | SUB expressaoMat %prec UMINUS   { $$ = - $2; }
-            | IDENTIFICADOR					          { $$ = variablesREAL[$1]; }
-            | REAL      
-            | INTEIRO      
-            | CARACTER            
+            | IDENTIFICADOR					          { 
+                                                if (variablesINT.find($1) != variablesINT.end())
+                                                  $$ = (double)variablesINT[$1];
+                                                else if(variablesREAL.find($1) != variablesREAL.end())
+                                                  $$ = (double)variablesREAL[$1];
+                                                else if(variablesCHAR.find($1) != variablesCHAR.end())
+                                                  $$ = variablesCHAR[$1];
+                                              } 
+            | INTEIRO                         { $$ = (double)$1;}
+            | REAL                            { $$ = (double)$1;}
+            | CARACTER                        { $$ = $1[1];}
             ;
 
-comandoSaida: comandoSaidaINT | comandoSaidaREAL | comandoSaidaCHAR | comandoSaidaVariavel;
+comandoSaida: comandoSaidaINT | comandoSaidaREAL | comandoSaidaCHAR | comandoSaidaVariavel | comandoSaidaEXP | comandoSaidaString;
 
 comandoSaidaINT: SAIDA ABREPARENTESES INTEIRO FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
 comandoSaidaREAL: SAIDA ABREPARENTESES REAL FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
 comandoSaidaCHAR: SAIDA ABREPARENTESES CARACTER FECHAPARENTESES PONTOVIRGULA { cout << $3[1] << "\n"; } ;
+comandoSaidaEXP: SAIDA ABREPARENTESES expressaoMat FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
+comandoSaidaString: SAIDA ABREPARENTESES STRING FECHAPARENTESES PONTOVIRGULA { int i = 1; while($3[i] != '\"') cout << $3[i++]; cout << "\n"; } ;
+
+comandoEntrada: IDENTIFICADOR ATRIBUICAO ENTRADA ABREPARENTESES FECHAPARENTESES PONTOVIRGULA {};
 
 comandoSaidaVariavel: SAIDA ABREPARENTESES IDENTIFICADOR FECHAPARENTESES PONTOVIRGULA { 
       if(variablesINT.find($3) != variablesINT.end())
@@ -133,32 +131,6 @@ comandoSaidaVariavel: SAIDA ABREPARENTESES IDENTIFICADOR FECHAPARENTESES PONTOVI
       else if(variablesCHAR.find($3) != variablesCHAR.end()) 
         cout << variablesCHAR[$3] << "\n"; 
     } ;
-
-/*
-expressaoMat: ABREPARENTESES expressaoMat FECHAPARENTESES
-            | informacao
-            | expressaoMat operacaoMat expressaoMat
-            ;
-*/
-
-/*
-expr: expr '+' expr         { $$ = $1 + $3; }
-    | expr '-' expr         { $$ = $1 - $3; }
-    | expr '*' expr			    { $$ = $1 * $3; }
-    | expr '/' expr			    { 
-                              if ($3 == 0)
-                                yyerror("divisão por zero");
-                              else
-                                $$ = $1 / $3; 
-                            }
-    | '(' expr ')'			    { $$ = $2; }
-    | '-' expr %prec UMINUS { $$ = - $2; }
-    | ID					          { $$ = variables[$1]; }
-    | NUM
-    ;
-*/
-
-
 
 exp_logica: ABREPARENTESES exp_logica FECHAPARENTESES
           | expressaoMat RELACIONAL expressaoMat
@@ -170,38 +142,10 @@ condicaoIf: CONDICIONAL ABREPARENTESES exp_logica FECHAPARENTESES INICIOBLOCO co
 
 condicaoIfElse: condicaoIf DESVIOCONDICIONAL INICIOBLOCO codigo FIMBLOCO ;
 
-comandoEntrada: IDENTIFICADOR ATRIBUICAO ENTRADA ABREPARENTESES FECHAPARENTESES PONTOVIRGULA ;
-
 comandoWhile: REPETICAOWHILE ABREPARENTESES exp_logica FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;
 
 comandoFor: REPETICAOFOR ABREPARENTESES atribuirValor DOISPONTOS exp_logica DOISPONTOS atribuirValor FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;
 
-/*
-math: math calc '\n'
-	| calc '\n'
-	;
-
-
-
-calc: ID '=' expr 			    { variables[$1] = $3; } 	
-    | expr					        { cout << "= " << $1 << "\n"; }
-    ; 
-
-expr: expr '+' expr         { $$ = $1 + $3; }
-    | expr '-' expr         { $$ = $1 - $3; }
-    | expr '*' expr			    { $$ = $1 * $3; }
-    | expr '/' expr			    { 
-                              if ($3 == 0)
-                                yyerror("divisão por zero");
-                              else
-                                $$ = $1 / $3; 
-                            }
-    | '(' expr ')'			    { $$ = $2; }
-    | '-' expr %prec UMINUS { $$ = - $2; }
-    | ID					          { $$ = variables[$1]; }
-    | NUM
-    ;
-*/
 %%
 
 int main() {

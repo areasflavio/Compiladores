@@ -1,5 +1,14 @@
 begin
-int var;
-var = 2.456789;
-output(var);
+int a;
+real b;
+int c;
+real d;
+a = 1;
+b = 2.2;
+c = 2*(a+b);
+d = 2*(a+b);
+output("LEMOBS:");
+output(c);
+output(d);
+output(1 + 1.2);
 end
