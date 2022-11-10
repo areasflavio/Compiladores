@@ -1,0 +1,6 @@
+begin
+int a;
+a = input();
+
+output( a);
+end

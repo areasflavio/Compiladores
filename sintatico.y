@@ -7,6 +7,7 @@
 using std::string;
 using std::unordered_map;
 using std::cout;
+using std::cin;
 
 /* protótipos das funções especiais */
 int yylex(void);
@@ -121,7 +122,20 @@ comandoSaidaCHAR: SAIDA ABREPARENTESES CARACTER FECHAPARENTESES PONTOVIRGULA { c
 comandoSaidaEXP: SAIDA ABREPARENTESES expressaoMat FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
 comandoSaidaString: SAIDA ABREPARENTESES STRING FECHAPARENTESES PONTOVIRGULA { int i = 1; while($3[i] != '\"') cout << $3[i++]; cout << "\n"; } ;
 
-comandoEntrada: IDENTIFICADOR ATRIBUICAO ENTRADA ABREPARENTESES FECHAPARENTESES PONTOVIRGULA {};
+comandoEntrada: IDENTIFICADOR ATRIBUICAO ENTRADA ABREPARENTESES FECHAPARENTESES PONTOVIRGULA {
+
+  if (variablesINT.find($1) != variablesINT.end())
+  {
+    int a;
+    cin >> a; 
+    variablesINT[$1] = a;
+  }
+  else if(variablesREAL.find($1) != variablesREAL.end())
+    cin >> variablesREAL[$1];
+  else if(variablesCHAR.find($1) != variablesCHAR.end())
+    cin >> variablesCHAR[$1];
+
+};
 
 comandoSaidaVariavel: SAIDA ABREPARENTESES IDENTIFICADOR FECHAPARENTESES PONTOVIRGULA { 
       if(variablesINT.find($3) != variablesINT.end())
