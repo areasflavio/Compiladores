@@ -5,21 +5,55 @@
 %option yylineno
 %option noyywrap
 
-digito	[0-9]
-letra_	[a-zA-Z_]
-pontdig {digito}*"."?{digito}+
-digpont {digito}+"."
+digito	            [0-9]
+letra	              [a-zA-Z]
+menos               "-"
+mais                "+"
+aspasSimples        "'"
 
-numero  {pontdig}|{digpont}
-id		  {letra_}({letra_}|{digito})*
+identificador		    {letra}({letra}|{digito})*
+inteiro             {menos}|{mais}?{digito}+
+real                {menos}|{mais}?{digito}+"."{digito}+
+caracter            {aspasSimples}({letra}|{digito}){aspasSimples}
+
+relacional          "=="|">="|"<="|">"|"<"|"!="
+logicoBinario       "and"|"or"
+logicoUnario        "not"
+tipo                "int"|"char"|"real"
 
 %%
-
-[\t ]+		{ ; /* ignora espaços em branco */ }
-"begin"   {return INICIOPROGRAMA;}
-"end"     {return FIMPROGRAMA;}
-{numero}  { yylval.num = atof(yytext); return NUM; }
-{id}		  { strcpy(yylval.id, yytext); return ID; }
-.|\n		  { return yytext[0]; }
+          
+[\t ]+		          { ; /* ignora espaços em branco */ }
+\n                  { return FIMLINHA; }
+"begin"             { return INICIOPROGRAMA; }
+"end"               { return FIMPROGRAMA; }
+","                 { return VIRGULA; }
+";"                 { return PONTOVIRGULA; }
+"="                 { return ATRIBUICAO; }
+":"                 { return DOISPONTOS; }
+"+"                 { return SOMA; }
+"-"                 { return SUB; }
+"*"                 { return MULT; }
+"/"                 { return DIV; }
+"mod"               { return MOD; }
+"("                 { return ABREPARENTESES; }
+")"                 { return FECHAPARENTESES; }
+{relacional}        { return RELACIONAL; }
+{logicoBinario}     { return LOGICOBINARIO; }
+{logicoUnario}      { return LOGICOUNARIO; }
+{tipo}              { return TIPO; }
+"if"                { return CONDICIONAL; }
+"{"                 { return INICIOBLOCO; }
+"}"                 { return FIMBLOCO; }
+"else"              { return DESVIOCONDICIONAL; }
+"input"             { return ENTRADA; }
+"output"            { return SAIDA; }
+"while"             { return REPETICAOWHILE; }
+"for"               { return REPETICAOFOR; }
+{identificador}		  { strcpy(yylval.id, yytext); return IDENTIFICADOR; }
+{inteiro}           { yylval.inteiro = atoi(yytext); return INTEIRO; }
+{real}              { yylval.real = atof(yytext); return REAL; }
+{caracter}          { strcpy(yylval.caracter, yytext); return CARACTER; }
+.   		            { }
 
 %%

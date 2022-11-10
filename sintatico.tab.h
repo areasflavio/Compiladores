@@ -54,11 +54,37 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    ID = 258,                      /* ID  */
-    NUM = 259,                     /* NUM  */
-    INICIOPROGRAMA = 260,          /* INICIOPROGRAMA  */
-    FIMPROGRAMA = 261,             /* FIMPROGRAMA  */
-    UMINUS = 262                   /* UMINUS  */
+    IDENTIFICADOR = 258,           /* IDENTIFICADOR  */
+    INTEIRO = 259,                 /* INTEIRO  */
+    REAL = 260,                    /* REAL  */
+    CARACTER = 261,                /* CARACTER  */
+    INICIOPROGRAMA = 262,          /* INICIOPROGRAMA  */
+    FIMPROGRAMA = 263,             /* FIMPROGRAMA  */
+    FIMLINHA = 264,                /* FIMLINHA  */
+    TIPO = 265,                    /* TIPO  */
+    VIRGULA = 266,                 /* VIRGULA  */
+    PONTOVIRGULA = 267,            /* PONTOVIRGULA  */
+    ATRIBUICAO = 268,              /* ATRIBUICAO  */
+    DOISPONTOS = 269,              /* DOISPONTOS  */
+    SOMA = 270,                    /* SOMA  */
+    SUB = 271,                     /* SUB  */
+    MULT = 272,                    /* MULT  */
+    DIV = 273,                     /* DIV  */
+    MOD = 274,                     /* MOD  */
+    ABREPARENTESES = 275,          /* ABREPARENTESES  */
+    FECHAPARENTESES = 276,         /* FECHAPARENTESES  */
+    RELACIONAL = 277,              /* RELACIONAL  */
+    LOGICOBINARIO = 278,           /* LOGICOBINARIO  */
+    LOGICOUNARIO = 279,            /* LOGICOUNARIO  */
+    CONDICIONAL = 280,             /* CONDICIONAL  */
+    INICIOBLOCO = 281,             /* INICIOBLOCO  */
+    FIMBLOCO = 282,                /* FIMBLOCO  */
+    DESVIOCONDICIONAL = 283,       /* DESVIOCONDICIONAL  */
+    ENTRADA = 284,                 /* ENTRADA  */
+    SAIDA = 285,                   /* SAIDA  */
+    REPETICAOWHILE = 286,          /* REPETICAOWHILE  */
+    REPETICAOFOR = 287,            /* REPETICAOFOR  */
+    UMINUS = 288                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -69,10 +95,12 @@ union YYSTYPE
 {
 #line 20 "sintatico.y"
 
-	double num;
+  int inteiro;
+	double real;
+  char caracter[3];
 	char id[16];
 
-#line 76 "sintatico.tab.h"
+#line 104 "sintatico.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

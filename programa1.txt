@@ -1,5 +1,4 @@
 begin
-xew = 5
-xew
-(5+5)*2
+int a = 5;
+output(a);
 end
