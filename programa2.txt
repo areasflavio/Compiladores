@@ -1,6 +1,7 @@
 begin
 int a;
+output("Entre com o valor: ");
 a = input();
-
-output( a);
+output("A metade desse valor eh: ");
+output(a/2);
 end

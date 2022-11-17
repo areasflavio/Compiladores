@@ -10,9 +10,9 @@ using std::cout;
 using std::cin;
 
 /* protótipos das funções especiais */
-int yylex(void);
-int yyparse(void);
-void yyerror(const char *);
+extern int yylex(void);
+extern int yyparse(void);
+extern void yyerror(const char *);
 
 /* tabela de símbolos */
 unordered_map<string, double> variablesREAL;
@@ -161,10 +161,6 @@ comandoWhile: REPETICAOWHILE ABREPARENTESES exp_logica FECHAPARENTESES INICIOBLO
 comandoFor: REPETICAOFOR ABREPARENTESES atribuirValor DOISPONTOS exp_logica DOISPONTOS atribuirValor FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;
 
 %%
-
-int main() {
-	yyparse();
-}
 
 void yyerror(const char * s) {
 	/* variáveis definidas no analisador léxico */
