@@ -22,10 +22,6 @@ real                {digito}+"."{digito}+
 caracter            {aspasSimples}({letra}|{digito}){aspasSimples}
 string              {aspasDuplas}(.)+{aspasDuplas}
 
-relacional          "=="|">="|"<="|">"|"<"|"!="
-logicoBinario       "and"|"or"
-logicoUnario        "not"
-
 %%
 
 [\t ]+		          {  /* ignora espaços em branco */ }
@@ -39,9 +35,15 @@ logicoUnario        "not"
 "mod"               { fprintf(out,"(%d,MOD,\"%s\")\n",yylineno,yytext); return MOD;}
 "("                 { fprintf(out,"(%d,ABREPARENTESES,\"%s\")\n",yylineno,yytext); return ABREPARENTESES;}
 ")"                 { fprintf(out,"(%d,FECHAPARENTESES,\"%s\")\n",yylineno,yytext); return FECHAPARENTESES;}
-{relacional}        { fprintf(out,"(%d,RELACIONAL,\"%s\")\n",yylineno,yytext); return RELACIONAL;}
-{logicoBinario}     { fprintf(out,"(%d,LOGICOBINARIO,\"%s\")\n",yylineno,yytext); return LOGICOBINARIO;}
-{logicoUnario}      { fprintf(out,"(%d,LOGICOUNARIO,\"%s\")\n",yylineno,yytext); return LOGICOUNARIO;}
+"=="                { fprintf(out,"(%d,EQ,\"%s\")\n",yylineno,yytext); return EQ;}
+"!="                { fprintf(out,"(%d,NE,\"%s\")\n",yylineno,yytext); return NE;}
+">="                { fprintf(out,"(%d,GE,\"%s\")\n",yylineno,yytext); return GE;}
+"<="                { fprintf(out,"(%d,LE,\"%s\")\n",yylineno,yytext); return LE;}
+">"                 { fprintf(out,"(%d,GT,\"%s\")\n",yylineno,yytext); return GT;}
+"<"                 { fprintf(out,"(%d,LT,\"%s\")\n",yylineno,yytext); return LT;}
+"and"               { fprintf(out,"(%d,AND,\"%s\")\n",yylineno,yytext); return AND;}
+"or"                { fprintf(out,"(%d,OR,\"%s\")\n",yylineno,yytext); return OR;}
+"not"               { fprintf(out,"(%d,NOT,\"%s\")\n",yylineno,yytext); return NOT;}
 "if"                { fprintf(out,"(%d,CONDICIONAL,\"%s\")\n",yylineno,yytext); return CONDICIONAL;}
 "{"                 { fprintf(out,"(%d,INICIOBLOCO,\"%s\")\n",yylineno,yytext); return INICIOBLOCO;}
 "}"                 { fprintf(out,"(%d,FIMBLOCO,\"%s\")\n",yylineno,yytext); return FIMBLOCO;}

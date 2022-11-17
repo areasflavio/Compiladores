@@ -1,0 +1,3 @@
+begin
+output(not(5!=3));
+end
