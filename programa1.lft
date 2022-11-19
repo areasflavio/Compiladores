@@ -1,0 +1,17 @@
+begin
+int a;
+int b;
+int c;
+int n;
+output("Digite n (enésimo numero da sequencia de fibonacci):");
+input(n);
+a = 1;
+b = 1;
+while(n >= 3){
+    c = a+b;
+    a = b;
+    b = c;
+    n = n - 1;
+}
+output(b);
+end

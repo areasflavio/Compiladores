@@ -18,6 +18,12 @@ extern void yyerror(const char *);
 unordered_map<string, double> variablesREAL;
 unordered_map<string, int> variablesINT;
 unordered_map<string, char> variablesCHAR;
+
+extern FILE *out; 
+extern FILE *cpp;
+
+#pragma clang diagnostic ignored "-Wunused-variable"
+
 %}
 
 %union {
@@ -38,13 +44,12 @@ unordered_map<string, char> variablesCHAR;
 %token INT DOUBLE CHAR
 %token INICIOPROGRAMA FIMPROGRAMA FIMLINHA 
 %token TIPO VIRGULA PONTOVIRGULA ATRIBUICAO DOISPONTOS
-%token SOMA SUB MULT DIV MOD 
+%token SOMA SUB MULT DIV MOD SQRT
 %token ABREPARENTESES FECHAPARENTESES RELACIONAL LOGICOBINARIO LOGICOUNARIO
 %token CONDICIONAL INICIOBLOCO FIMBLOCO DESVIOCONDICIONAL
 %token ENTRADA SAIDA REPETICAOWHILE REPETICAOFOR
 %token EQ NE LT LE GT GE AND OR NOT
-/* %type <real> valor
-%type <real> informacao */
+
 %type <real> expressaoMat
 %type <boolean> exp_logica
 
@@ -52,7 +57,7 @@ unordered_map<string, char> variablesCHAR;
 %type <real> comandoSaidaREAL
 %type <caracter> comandoSaidaCHAR 
 
-// Precedencia (TESTAR DEPOIS)
+// Precedencia (TESTAR DEPOIS) BOTAR PRA EXPRESSAO LOGICA
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -66,107 +71,80 @@ codigo: instrucao codigo
       ;
 
 instrucao: declaracao 
-         | atribuirValor 
-         | condicaoIf 
+         | comandoFor
+         | atribuirValor PONTOVIRGULA
+         | condicaoIf
          | condicaoIfElse
-         | comandoEntrada 
+         | comandoEntrada
          | comandoSaida 
          | comandoWhile
-         | comandoFor
          | FIMLINHA
          ;
 
-declaracao: declaracaoINT | declaracaoCHAR | declaracaoREAL ;
+declaracao: declaracaoINT | declaracaoCHAR | declaracaoREAL;
 
-declaracaoINT: INT IDENTIFICADOR PONTOVIRGULA { variablesINT[$2] = 0; } ;
-declaracaoREAL: DOUBLE IDENTIFICADOR PONTOVIRGULA { variablesREAL[$2] = 0; } ;
-declaracaoCHAR: CHAR IDENTIFICADOR PONTOVIRGULA { variablesCHAR[$2] = ' '; } ;
+declaracaoINT: INT IDENTIFICADOR PONTOVIRGULA ;
+declaracaoREAL: DOUBLE IDENTIFICADOR PONTOVIRGULA ;
+declaracaoCHAR: CHAR IDENTIFICADOR PONTOVIRGULA ;
 
-atribuirValor: setaValor PONTOVIRGULA ;
+atribuirValor: setaValor ;
 
-setaValor: IDENTIFICADOR ATRIBUICAO expressaoMat  { if (variablesINT.find($1) != variablesINT.end())
-                                                      variablesINT[$1] = (int)$3;
-                                                    else if(variablesREAL.find($1) != variablesREAL.end())
-                                                      variablesREAL[$1] = (double)$3;
-                                                    else if(variablesCHAR.find($1) != variablesCHAR.end())
-                                                      variablesCHAR[$1] = $3;
-                                                  }
+setaValor: IDENTIFICADOR ATRIBUICAO expressaoMat ;
 
-expressaoMat: expressaoMat SOMA expressaoMat  { $$ = $1 + $3; }
-            | expressaoMat SUB expressaoMat   { $$ = $1 - $3; }
-            | expressaoMat MULT expressaoMat  { $$ = $1 * $3; }
-            | expressaoMat DIV expressaoMat   { 
-                                                if ($3 == 0)
-                                                  yyerror("Divisão por 0");
-                                                else
-                                                  $$ = $1 / $3; 
-                                              }
-            | ABREPARENTESES expressaoMat FECHAPARENTESES			      { $$ = $2; }
-            | SUB expressaoMat %prec UMINUS   { $$ = - $2; }
-            | IDENTIFICADOR					          { 
-                                                if (variablesINT.find($1) != variablesINT.end())
-                                                  $$ = (double)variablesINT[$1];
-                                                else if(variablesREAL.find($1) != variablesREAL.end())
-                                                  $$ = (double)variablesREAL[$1];
-                                                else if(variablesCHAR.find($1) != variablesCHAR.end())
-                                                  $$ = variablesCHAR[$1];
-                                              } 
-            | INTEIRO                         { $$ = (double)$1;}
-            | REAL                            { $$ = (double)$1;}
-            | CARACTER                        { $$ = $1[1];}
+expressaoMat: expressaoMat SOMA expressaoMat
+            | expressaoMat SUB expressaoMat
+            | expressaoMat MULT expressaoMat
+            | expressaoMat DIV expressaoMat
+            | expressaoMat MOD expressaoMat
+            | ABREPARENTESES expressaoMat FECHAPARENTESES
+            | SUB expressaoMat %prec UMINUS
+            | SQRT expressaoMat
+            | IDENTIFICADOR
+            | INTEIRO
+            | REAL
+            | CARACTER
             ;
 
-comandoSaida: comandoSaidaINT | comandoSaidaREAL | comandoSaidaCHAR | comandoSaidaVariavel | comandoSaidaEXP | comandoSaidaString | comandoSaidaLogico;
+comandoSaida: comandoSaidaINT 
+            | comandoSaidaREAL 
+            | comandoSaidaCHAR 
+            | comandoSaidaVariavel 
+            | comandoSaidaEXP 
+            | comandoSaidaString 
+            | comandoSaidaLogico 
+            ;
 
-comandoSaidaINT: SAIDA ABREPARENTESES INTEIRO FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
-comandoSaidaREAL: SAIDA ABREPARENTESES REAL FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
-comandoSaidaCHAR: SAIDA ABREPARENTESES CARACTER FECHAPARENTESES PONTOVIRGULA { cout << $3[1] << "\n"; } ;
-comandoSaidaEXP: SAIDA ABREPARENTESES expressaoMat FECHAPARENTESES PONTOVIRGULA { cout << $3 << "\n"; } ;
-comandoSaidaString: SAIDA ABREPARENTESES STRING FECHAPARENTESES PONTOVIRGULA { int i = 1; while($3[i] != '\"') cout << $3[i++]; cout << "\n"; } ;
-comandoSaidaLogico: SAIDA ABREPARENTESES exp_logica FECHAPARENTESES PONTOVIRGULA { cout << ( $3 ? "true" : "false" ) << "\n"; } ;
+comandoSaidaINT: SAIDA ABREPARENTESES INTEIRO FECHAPARENTESES PONTOVIRGULA ;
+comandoSaidaREAL: SAIDA ABREPARENTESES REAL FECHAPARENTESES PONTOVIRGULA ;
+comandoSaidaCHAR: SAIDA ABREPARENTESES CARACTER FECHAPARENTESES PONTOVIRGULA ;
+comandoSaidaEXP: SAIDA ABREPARENTESES expressaoMat FECHAPARENTESES PONTOVIRGULA ;
+comandoSaidaString: SAIDA ABREPARENTESES STRING FECHAPARENTESES PONTOVIRGULA ;
+comandoSaidaLogico: SAIDA ABREPARENTESES exp_logica FECHAPARENTESES PONTOVIRGULA ;
 
-comandoEntrada: IDENTIFICADOR ATRIBUICAO ENTRADA ABREPARENTESES FECHAPARENTESES PONTOVIRGULA {
+comandoEntrada: ENTRADA ABREPARENTESES IDENTIFICADOR FECHAPARENTESES PONTOVIRGULA ;
 
-  if (variablesINT.find($1) != variablesINT.end()) {
-    int a;
-    cin >> a; 
-    variablesINT[$1] = a;
-  }
-  else if(variablesREAL.find($1) != variablesREAL.end())
-    cin >> variablesREAL[$1];
-  else if(variablesCHAR.find($1) != variablesCHAR.end())
-    cin >> variablesCHAR[$1];
+comandoSaidaVariavel: SAIDA ABREPARENTESES IDENTIFICADOR FECHAPARENTESES PONTOVIRGULA ;
 
-};
+exp_logica: ABREPARENTESES exp_logica FECHAPARENTESES
+          | expressaoMat EQ expressaoMat
+          | expressaoMat NE expressaoMat
+          | expressaoMat GE expressaoMat
+          | expressaoMat LE expressaoMat
+          | expressaoMat GT expressaoMat
+          | expressaoMat LT expressaoMat
+          | exp_logica AND exp_logica
+          | exp_logica OR exp_logica
+          | NOT exp_logica
+          ;
 
-comandoSaidaVariavel: SAIDA ABREPARENTESES IDENTIFICADOR FECHAPARENTESES PONTOVIRGULA { 
-  if(variablesINT.find($3) != variablesINT.end())
-    cout << variablesINT[$3] << "\n";
-  else if(variablesREAL.find($3) != variablesREAL.end()) 
-    cout << variablesREAL[$3] << "\n";
-  else if(variablesCHAR.find($3) != variablesCHAR.end()) 
-    cout << variablesCHAR[$3] << "\n"; 
-};
-
-exp_logica: ABREPARENTESES exp_logica FECHAPARENTESES { $$ = $2; }
-          | expressaoMat EQ expressaoMat { $$ = $1 == $3; }
-          | expressaoMat NE expressaoMat { $$ = $1 != $3; }
-          | expressaoMat GE expressaoMat { $$ = $1 >= $3; }
-          | expressaoMat LE expressaoMat { $$ = $1 <= $3; }
-          | expressaoMat GT expressaoMat { $$ = $1 > $3; }
-          | expressaoMat LT expressaoMat { $$ = $1 < $3; }
-          | exp_logica AND exp_logica { $$ = $1 && $3; }
-          | exp_logica OR exp_logica { $$ = $1 && $3; }
-          | NOT exp_logica { $$ = !($2); }
-
-condicaoIf: CONDICIONAL ABREPARENTESES exp_logica FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;
+condicaoIf: CONDICIONAL ABREPARENTESES exp_logica FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;  
 
 condicaoIfElse: condicaoIf DESVIOCONDICIONAL INICIOBLOCO codigo FIMBLOCO ;
 
 comandoWhile: REPETICAOWHILE ABREPARENTESES exp_logica FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;
 
 comandoFor: REPETICAOFOR ABREPARENTESES atribuirValor DOISPONTOS exp_logica DOISPONTOS atribuirValor FECHAPARENTESES INICIOBLOCO codigo FIMBLOCO ;
-  
+
 %%
 
 void yyerror(const char * s) {
@@ -176,4 +154,6 @@ void yyerror(const char * s) {
 	
 	/* mensagem de erro exibe o símbolo que causou erro e o número da linha */
   cout << "Erro (" << s << "): símbolo \"" << yytext << "\" (linha " << yylineno << ")\n";
+  /* remove("main.lex");
+  remove("main.cpp"); */
 }

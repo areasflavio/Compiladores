@@ -1,0 +1,24 @@
+begin
+int a;
+int i;
+char flag;
+flag = 'S';
+output("Digite um numero para verificar se este é um primo: ");
+input(a);
+if (a == 1) {
+  output("O numero nao eh primo!");
+  flag = 'N';
+} else {
+  i = 2;
+  while(i*i <= a) {
+    if (a mod i == 0) {
+      output("O numero nao eh primo!");
+      flag = 'N';
+    }
+    i = i + 1;
+  }
+  if(flag != 'N') {
+    output("O numero eh primo!");
+  }
+}
+end
