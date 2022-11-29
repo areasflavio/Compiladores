@@ -1,7 +1,6 @@
 %{
   #include "sintatico.tab.h"
 
-  // #define YY_DECL extern "C" int yylex()
   #include<string>
   #include<iostream>
   using namespace std;
@@ -35,10 +34,6 @@ string              {aspasDuplas}(.)+{aspasDuplas}
 "end"               { fprintf(out,"(%d,FIMPROGRAMA,\"%s\")\n",yylineno,yytext); 
                       fprintf(cpp,"return 0; \n}");
                       return FIMPROGRAMA;
-                    }
-","                 { fprintf(out,"(%d,VIRGULA,\"%s\")\n",yylineno,yytext); 
-                      fprintf(cpp,",");
-                      return VIRGULA;
                     }
 ";"                 { fprintf(out,"(%d,PONTOVIRGULA,\"%s\")\n",yylineno,yytext); 
                       if(saida == false)
@@ -165,19 +160,19 @@ string              {aspasDuplas}(.)+{aspasDuplas}
 "sqrt"              { fprintf(out,"(%d,SQRT,\"%s\")\n",yylineno,yytext); 
                       fprintf(cpp,"sqrt");
                       return SQRT;}
-{inteiro}           { fprintf(out,"(%d,INTEIRO,\"%s\")\n",yylineno,yytext); yylval.inteiro = atoi(yytext); 
+{inteiro}           { fprintf(out,"(%d,INTEIRO,\"%s\")\n",yylineno,yytext);
                       fprintf(cpp,"%s", yytext);
                       return INTEIRO;}
-{real}              { fprintf(out,"(%d,REAL,\"%s\")\n",yylineno,yytext); yylval.real = atof(yytext); 
+{real}              { fprintf(out,"(%d,REAL,\"%s\")\n",yylineno,yytext);
                       fprintf(cpp,"%s", yytext);
                       return REAL;}
-{identificador}		  { fprintf(out,"(%d,IDENTIFICADOR,\"%s\")\n",yylineno,yytext); strcpy(yylval.id, yytext); 
+{identificador}		  { fprintf(out,"(%d,IDENTIFICADOR,\"%s\")\n",yylineno,yytext);
                       fprintf(cpp,"%s", yytext);
                       return IDENTIFICADOR;}
-{caracter}          { fprintf(out,"(%d,CARACTER,\"%s\")\n",yylineno,yytext); strcpy(yylval.caracter, yytext); 
+{caracter}          { fprintf(out,"(%d,CARACTER,\"%s\")\n",yylineno,yytext);
                       fprintf(cpp,"%s", yytext);
                       return CARACTER;}
-{string}            { fprintf(out,"(%d,STRING,\"%s\")\n",yylineno,yytext); strcpy(yylval.string, yytext); 
+{string}            { fprintf(out,"(%d,STRING,\"%s\")\n",yylineno,yytext);
                       fprintf(cpp,"%s", yytext);
                       return STRING;}
 .   		            { }

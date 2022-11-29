@@ -2,16 +2,18 @@ begin
 int a;
 int b;
 int c;
+int i;
 int n;
-output("Digite n (enésimo numero da sequencia de fibonacci):");
+output("Digite n (enésimo numero da sequência de fibonacci):");
 input(n);
-a = 1;
+a = 0;
 b = 1;
-while(n >= 3){
+output("Sequência:");
+output(b);
+for(i = 2: i <= n: i = i + 1){
     c = a+b;
     a = b;
     b = c;
-    n = n - 1;
+    output(b);
 }
-output(b);
 end

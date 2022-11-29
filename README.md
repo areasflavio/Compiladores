@@ -14,7 +14,7 @@ sudo apt install flex bison
 make clean
 ```
 
-**Análise sintática e semântica**
+**Análise léxica e sintática**
 
 ```bash
 make analise
@@ -22,7 +22,7 @@ make analise
 
 **Compilação do programa .lft em cpp**
 
-Nessa etapa será criado um arquivo (main.lex) contendo o reconhecimento de todos os TOKENS e um arquivo (main.cpp) com o código traduzido em C++ do programa compilado.
+Nessa etapa será criado um arquivo (main.txt) contendo o reconhecimento de todos os TOKENS e um arquivo (main.cpp) com o código traduzido em C++ do programa compilado.
 
 _É necessário passar o nome do arquivo de entrada no argumento file_
 
@@ -52,3 +52,9 @@ make executar
 - [x] Expressões Lógicas
 - [x] Condicionais (if/else)
 - [x] Loops (for e while)
+
+## Autores
+
+- [Flávio Arêas](https://github.com/areasflavio)
+- [João Tonet](https://github.com/JoaoTonet)
+- [Luiz Emanoel](https://github.com/em4noel-dev)

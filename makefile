@@ -13,17 +13,22 @@ analise: lex.yy.c sintatico.tab.c
 	@$(CPPC) lex.yy.c sintatico.tab.c -std=c++17 -o lex
 
 lex.yy.c: lexico.l
+	@echo "Análise léxica..."
 	@$(FLEX) lexico.l
 
 sintatico.tab.c: sintatico.y
+	@echo "Análise sintática..."
 	@$(BISON) -d sintatico.y --warnings=none
 
 compilar $(file):
-	@./lex $(file) main.lex main.cpp
+	@echo "Compilando com C++ o programa: $(file)..."
+	@./lex $(file) main.txt main.cpp
 
 executar:
+	@echo "Executando o arquivo..."
 	@$(CPPC) main.cpp
 	@./a.out
 
 clean:
-	@rm lex lex.yy.c sintatico.tab.c sintatico.tab.h main.lex main.cpp a.out
+	@echo "Removendo arquivos temporários..."
+	@rm lex lex.yy.c sintatico.tab.c sintatico.tab.h main.txt main.cpp a.out

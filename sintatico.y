@@ -1,11 +1,9 @@
 %{
-/* com suporte a definição de variáveis */
+
 #include <iostream>
 #include <string>
-#include <unordered_map>
 
 using std::string;
-using std::unordered_map;
 using std::cout;
 using std::cin;
 
@@ -14,11 +12,6 @@ extern int yylex(void);
 extern int yyparse(void);
 extern void yyerror(const char *);
 
-/* tabela de símbolos */
-unordered_map<string, double> variablesREAL;
-unordered_map<string, int> variablesINT;
-unordered_map<string, char> variablesCHAR;
-
 extern FILE *out; 
 extern FILE *cpp;
 
@@ -26,38 +19,19 @@ extern FILE *cpp;
 
 %}
 
-%union {
-  int inteiro;
-	double real;
-  char caracter[3];
-  char string[30];
-	char id[16];
-  bool boolean;
-}
-
-%token <id> IDENTIFICADOR
-%token <inteiro> INTEIRO
-%token <real> REAL
-%token <caracter> CARACTER
-%token <string> STRING
-
+%token IDENTIFICADOR INTEIRO REAL CARACTER STRING
 %token INT DOUBLE CHAR
 %token INICIOPROGRAMA FIMPROGRAMA FIMLINHA 
-%token TIPO VIRGULA PONTOVIRGULA ATRIBUICAO DOISPONTOS
+%token PONTOVIRGULA ATRIBUICAO DOISPONTOS
 %token SOMA SUB MULT DIV MOD SQRT
-%token ABREPARENTESES FECHAPARENTESES RELACIONAL LOGICOBINARIO LOGICOUNARIO
+%token ABREPARENTESES FECHAPARENTESES
 %token CONDICIONAL INICIOBLOCO FIMBLOCO DESVIOCONDICIONAL
 %token ENTRADA SAIDA REPETICAOWHILE REPETICAOFOR
 %token EQ NE LT LE GT GE AND OR NOT
 
-%type <real> expressaoMat
-%type <boolean> exp_logica
+%type expressaoMat exp_logica
+%type comandoSaidaINT comandoSaidaREAL comandoSaidaCHAR 
 
-%type <inteiro> comandoSaidaINT
-%type <real> comandoSaidaREAL
-%type <caracter> comandoSaidaCHAR 
-
-// Precedencia (TESTAR DEPOIS) BOTAR PRA EXPRESSAO LOGICA
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -154,6 +128,4 @@ void yyerror(const char * s) {
 	
 	/* mensagem de erro exibe o símbolo que causou erro e o número da linha */
   cout << "Erro (" << s << "): símbolo \"" << yytext << "\" (linha " << yylineno << ")\n";
-  /* remove("main.lex");
-  remove("main.cpp"); */
 }
