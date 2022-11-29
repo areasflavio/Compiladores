@@ -1,5 +1,14 @@
 # Compiladores
 
+Trabalho desenvolvido como requisito parcial da disciplina ECOM06 - Compiladores,
+do curso Engenharia da Computação na Universidade Federal de Itajubá.
+
+O trabalho consiste na criação de um compilador para a linguagem especificada.
+Implementação do Analisador Léxico e Sintático. Foram adicionados os arquivos
+do Bison e foram feitas as integrações com o arquivo prévio do Flex.
+Este projeto contém o analisador léxico em formato Flex e analisador sintático
+em formato Bison com integração com o compilador G++.
+
 ## Instalação do Flex e Bison (LINUX)
 
 ```bash
